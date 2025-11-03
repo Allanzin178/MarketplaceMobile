@@ -53,32 +53,38 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   logo: {
-    width: 60,
-    height: 60,
-    right: 5,
-    marginRight: 0
+    width: 50,
+    height: 50,
   },
   header: {
-    marginTop: 46,
-    alignSelf: "center",
+    paddingTop: 12,
+    paddingBottom: 12,
+    paddingHorizontal: 16,
     alignItems: "center",
     flexDirection: "row",
+    gap: 12,
+    backgroundColor: '#fff',
   },
   headerSearch: {
     flex: 1,
-    right: 5,
     flexDirection: "row",
-    borderColor: "#919191",
+    borderColor: "#e0e0e0",
     borderWidth: 1,
     borderRadius: 20,
-    gap: 7,
-    paddingVertical: 6,
+    gap: 8,
+    paddingVertical: 8,
     paddingHorizontal: 12,
     alignItems: "center",
-    boxShadow: "0 4px 4px 0 rgba(0, 0, 0, 0.25)",
+    backgroundColor: '#f9f9f9',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   headerSearchInput: {
-    color: "#B2B2B2",
-    flex: 1
+    color: "#333",
+    flex: 1,
+    fontSize: 14,
   },
 });

@@ -1,7 +1,9 @@
-import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '@/components/Header';
 import FarmaciasScroller from '@/components/FarmaciasScroller';
+import Button from '@/components/Button';
+import { useCart } from '@/contexts/CartContext';
 
 function Propagandas() {
   return (
@@ -18,16 +20,27 @@ function Propagandas() {
 }
 
 function Destaque(){
+  const { addItem } = useCart();
+
   type ItemProps = {
+    id: string,
     image: any,
     nome: string,
     descricao?: string,
-    preco: string,
+    preco: number,
   }
 
   function Item(props: ItemProps){
-    
-    
+    const handleAddToCart = () => {
+      addItem({
+        id: props.id,
+        nome: props.nome,
+        descricao: props.descricao,
+        image: props.image,
+        preco: props.preco,
+      });
+      Alert.alert('Sucesso', `${props.nome} adicionado ao carrinho!`);
+    };
 
     return (
       <View style={styleDestaque.item}>
@@ -36,39 +49,45 @@ function Destaque(){
         )}
         <Text style={styleDestaque.nome}>{props.nome}</Text>
         {props.descricao && <Text style={styleDestaque.descricao}>{props.descricao}</Text>}
-        <Text>{props.descricao}</Text>
-        <Text style={styleDestaque.preco}>{props.preco}</Text>
+        <Text style={styleDestaque.preco}>R$ {props.preco.toFixed(2)}</Text>
+        
+        <Button 
+          title="Adicionar"
+          onPress={handleAddToCart}
+          size="small"
+          fullWidth
+        />
       </View>
     )
   }
 
   const remedios = [
     {
-      id: 1,
+      id: '1',
       nome: 'Dipirona monoidratada 100mg Generico',
       image: require('../../assets/images/dipirona.png'),
       descricao: '20 Comprimidos',
-      preco: 'R$ 9,90'
+      preco: 9.90
     },
     {
-      id: 2,
+      id: '2',
       nome: 'Colorio ecoflim 5mg/ml',
       image: require('../../assets/images/colirio.png'),
-      preco: 'R$ 15,00'
+      preco: 15.00
     },
     {
-      id: 3,
+      id: '3',
       nome: 'Bepantol',
       image: require('../../assets/images/bepantol.png'),
       descricao: '20 Comprimidos',
-      preco: 'R$ 15,00'
+      preco: 15.00
     },
     {
-      id: 4,
+      id: '4',
       nome: 'Dipirona monoidratada 100mg Generico',
       image: require('../../assets/images/xarope.png'),
       descricao: '20 Comprimidos',
-      preco: 'R$ 15,00'
+      preco: 15.00
     },
   ]
 
@@ -79,9 +98,11 @@ function Destaque(){
         return (
           <Item
             key={item.id}
+            id={item.id}
             nome={item.nome}
             image={item.image}
             preco={item.preco}
+            descricao={item.descricao}
           />)
       })}
     </View>
@@ -91,15 +112,17 @@ function Destaque(){
 export default function Home() {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.wrapper}>
-        <Header/>
-        <View style={styles.separator}/>
+      <Header/>
+      <View style={styles.separator}/>
+      <ScrollView 
+        style={styles.wrapper}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <FarmaciasScroller/>
-
         <Propagandas/>
         <Destaque/>
       </ScrollView>
-      
     </SafeAreaView>
   );
 }
@@ -107,17 +130,20 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    backgroundColor: '#fff',
   },
   wrapper: {
-    width: '80%'
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
   },
   separator: {
-    width: '100%',
-    alignSelf: 'center',
-    backgroundColor: '#c2c2c2ff',
-    marginVertical: 20,
     height: 1,
+    backgroundColor: '#e5e5e5',
+    marginVertical: 12,
+    marginHorizontal: 16,
   },
 });
 
@@ -127,15 +153,21 @@ const styleDestaque = StyleSheet.create({
     flexWrap: 'wrap', 
     justifyContent: 'space-between',
     marginVertical: 10,
+    paddingBottom: 20,
   },
   item: {
-    width: '48%', // 2 colunas com espaço
-    backgroundColor: '#ebebebff',
-    padding: 10,
-    marginBottom: 12,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#ddddddff'
+    width: '48%',
+    backgroundColor: '#fff',
+    padding: 12,
+    marginBottom: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   image: {
     width: 80,
@@ -144,18 +176,20 @@ const styleDestaque = StyleSheet.create({
     alignSelf: 'center'
   },
   nome: {
-    fontSize: 14,
+    fontSize: 13,
     marginBottom: 4,
+    color: '#333',
+    fontWeight: '500',
   },
   descricao: {
-    fontSize: 12,
-    color: '#555',
-    textAlign: 'center',
-    marginBottom: 4,
+    fontSize: 11,
+    color: '#666',
+    marginBottom: 6,
   },
   preco: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#000000ff',
+    color: '#ff2b59',
+    marginBottom: 10,
   },
-})
+});

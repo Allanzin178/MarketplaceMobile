@@ -7,48 +7,37 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  Alert,
 } from "react-native";
+import { useCart } from "@/contexts/CartContext";
+import { router } from "expo-router";
+import Button from "@/components/Button";
 
 export default function Cart() {
-  const initialItems = [
-    {
-      id: "1",
-      nome: "Dipirona monoidratada 100mg Genérico",
-      descricao: "20 Comprimidos",
-      image: require("../../assets/images/dipirona.png"),
-      preco: 9.9,
-      precoAntigo: 15.0,
-      qty: 1,
-    },
-    {
-      id: "2",
-      nome: "Colorio ecoflim 5mg/ml",
-      descricao: "5 ml",
-      image: require("../../assets/images/colirio.png"),
-      preco: 15.0,
-      precoAntigo: 21.5,
-      qty: 3,
-    },
-  ];
-
-  const [items, setItems] = useState(initialItems);
+  const { items, updateQty, subtotal } = useCart();
   const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">(
     "delivery"
   );
 
   function changeQty(id: string, delta: number) {
-    setItems((prev) =>
-      prev.map((it) =>
-        it.id === id ? { ...it, qty: Math.max(0, it.qty + delta) } : it
-      )
-    );
+    const item = items.find((i) => i.id === id);
+    if (item) {
+      updateQty(id, item.qty + delta);
+    }
   }
 
-  const subtotal = items.reduce((s, it) => s + it.preco * it.qty, 0);
   const shipping = deliveryType === "delivery" ? 9.0 : 0.0;
   const total = subtotal + shipping;
 
-  function renderItem({ item }: { item: typeof initialItems[0] }) {
+  const handleCheckout = () => {
+    if (items.length === 0) {
+      Alert.alert("Carrinho vazio", "Adicione produtos ao carrinho antes de finalizar.");
+      return;
+    }
+    router.push("/(tabs)/checkout" as any);
+  };
+
+  function renderItem({ item }: { item: typeof items[0] }) {
     return (
       <View style={styles.card}>
         <Image
@@ -183,9 +172,12 @@ export default function Cart() {
             </View>
 
             <View style={{ height: 18 }} />
-            <TouchableOpacity style={styles.checkoutBtn}>
-              <Text style={styles.checkoutText}>Finalizar Compra</Text>
-            </TouchableOpacity>
+            <Button 
+              title="Finalizar Compra"
+              onPress={handleCheckout}
+              size="large"
+              fullWidth
+            />
 
             <View style={{ height: 80 }} />
           </>
@@ -301,12 +293,4 @@ const styles = StyleSheet.create({
   },
   summaryLabel: { color: "#666" },
   summaryValue: { color: "#000" },
-
-  checkoutBtn: {
-    backgroundColor: "#ff2b59",
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: "center",
-  },
-  checkoutText: { color: "#fff", fontWeight: "700", fontSize: 16 },
 });
