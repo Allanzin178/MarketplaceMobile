@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   },
   imageContainer:{
-    gap: 14
+    gap: 14,
+    width: '10%',
   }
 });

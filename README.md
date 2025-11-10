@@ -3,8 +3,8 @@
 1. Executar npm install
 2. Executar npm start
 
-## Fluxos desenvolvidos
+## Como executar API
 
-- Fluxo de compras
-- Tela inicial
-- Tela exemplo de perfil
+1. Abra a pasta server cd server
+2. Executar npm install
+3. Executar npm run dev

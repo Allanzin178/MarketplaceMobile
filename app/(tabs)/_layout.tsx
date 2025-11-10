@@ -3,6 +3,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
 import { Pressable, View, Text, StyleSheet } from 'react-native';
 import { CartProvider, useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Redirect } from 'expo-router';
 
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -21,8 +23,8 @@ function CartIcon({ color }: { color: string }) {
     <View style={{ position: 'relative' }}>
       <TabBarIcon name="shopping-basket" color={color} size={20} />
       {totalItems > 0 && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{totalItems}</Text>
+        <View>
+          <Text>{totalItems}</Text>
         </View>
       )}
     </View>
@@ -30,24 +32,53 @@ function CartIcon({ color }: { color: string }) {
 }
 
 function TabsContent() {
+  const { userType } = useAuth();
+  const isFarmacia = userType === 'farmacia';
+
   return (
     <Tabs
       screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#ff2b59',
+        tabBarInactiveTintColor: '#666',
+        tabBarStyle: {
+          backgroundColor: '#fff',
+          borderTopColor: '#f0f0f0',
+          borderTopWidth: 1,
+        },
+        tabBarItemStyle: {
+          paddingTop: 5,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          marginTop: 0,
+          padding: 0,
+        }
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          href: null,
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarButton: () => null,
         }}
       />
+      
+      {/* Telas da Farmácia */}
+      <Tabs.Screen
+        name="manage-products"
+        options={{
+          title: 'Seus Produtos',
+          tabBarIcon: ({ color }) => <TabBarIcon name="cubes" color={color} />,
+          tabBarButton: isFarmacia ? undefined : () => null,
+        }}
+      />
+
+      {/* Telas do Cliente */}
       <Tabs.Screen
         name="home"
         options={{
           title: 'Tela inicial',
-          headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          tabBarButton: !isFarmacia ? undefined : () => null,
         }}
       />
 
@@ -55,8 +86,8 @@ function TabsContent() {
         name="cart"
         options={{
           title: 'Suas cestas',
-          headerShown: false,
           tabBarIcon: ({ color }) => <CartIcon color={color} />,
+          tabBarButton: !isFarmacia ? undefined : () => null,
         }}
       />
 
@@ -64,32 +95,46 @@ function TabsContent() {
         name="history"
         options={{
           title: 'Pedidos',
-          headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="file-text-o" color={color} size={20}/>,
+          tabBarButton: !isFarmacia ? undefined : () => null,
         }}
       />
 
+      {/* Tela comum para ambos */}
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Perfil',
-          headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} size={20}/>,
         }}
       />
 
+      {/* Telas utilitárias (ocultas) */}
       <Tabs.Screen
         name="checkout"
         options={{
-          href: null,
-          headerShown: false,
+          tabBarButton: () => null,
         }}
       />
 
       <Tabs.Screen
         name="order-success"
         options={{
-          href: null,
+          tabBarButton: () => null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="new-product"
+        options={{
+          tabBarButton: () => null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="edit-product"
+        options={{
+          tabBarButton: () => null,
         }}
       />
     </Tabs>
@@ -97,6 +142,12 @@ function TabsContent() {
 }
 
 export default function TabLayout() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
+
   return (
     <CartProvider>
       <TabsContent />
@@ -104,23 +155,30 @@ export default function TabLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  badge: {
-    position: 'absolute',
-    right: -8,
-    top: -6,
-    backgroundColor: '#ff2b59',
-    borderRadius: 10,
-    minWidth: 18,
-    height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 4,
-  },
-  badgeText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-});
+// const styles = StyleSheet.create({
+//   badge: {
+//     position: 'absolute',
+//     right: -8,
+//     top: -5,
+//     backgroundColor: '#ff2b59',
+//     borderRadius: 8,
+//     minWidth: 16,
+//     height: 16,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     paddingHorizontal: 3,
+//     borderWidth: 1,
+//     borderColor: '#fff',
+//     zIndex: 2,
+//     elevation: 3,
+//   },
+//   badgeText: {
+//     color: '#fff',
+//     fontSize: 9,
+//     fontWeight: 'bold',
+//     includeFontPadding: false,
+//     textAlignVertical: 'center',
+//     lineHeight: 14,
+//   },
+// });
 

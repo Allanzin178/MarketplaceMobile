@@ -1,9 +1,47 @@
-import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '@/components/Header';
 import FarmaciasScroller from '@/components/FarmaciasScroller';
 import Button from '@/components/Button';
 import { useCart } from '@/contexts/CartContext';
+import { productService, Product } from '@/services/productService';
+
+
+
+interface ProductItemProps {
+  product: Product;
+  onAddToCart: (product: Product) => void;
+}
+
+const ProductItem: React.FC<ProductItemProps> = ({ product, onAddToCart }) => {
+  const handleAddToCart = () => {
+    onAddToCart(product);
+    Alert.alert('Sucesso', `${product.nome} adicionado ao carrinho!`);
+  };
+
+  return (
+    <View style={styleDestaque.item}>
+      {product.image && (
+        <Image 
+          source={typeof product.image === 'string' ? { uri: product.image } : product.image} 
+          style={styleDestaque.image} 
+          resizeMode="contain" 
+        />
+      )}
+      <Text style={styleDestaque.nome}>{product.nome}</Text>
+      {product.descricao && <Text style={styleDestaque.descricao}>{product.descricao}</Text>}
+      <Text style={styleDestaque.preco}>R$ {product.preco.toFixed(2)}</Text>
+      
+      <Button 
+        title="Adicionar"
+        onPress={handleAddToCart}
+        size="small"
+        fullWidth
+      />
+    </View>
+  );
+};
 
 function Propagandas() {
   return (
@@ -11,118 +49,125 @@ function Propagandas() {
       <Image 
         source={require('../../assets/images/Porpagandas.png')}
         style={{
-          width: '100%'
+          width: '100%',
+          paddingTop: 20
         }}
         resizeMode='contain'
       />
     </View>
-  )
+  );
 }
 
-function Destaque(){
+interface DestaqueProps {
+  searchText: string;
+  filteredProducts: Product[];
+}
+
+const Destaque: React.FC<DestaqueProps> = ({ searchText, filteredProducts }) => {
   const { addItem } = useCart();
 
-  type ItemProps = {
-    id: string,
-    image: any,
-    nome: string,
-    descricao?: string,
-    preco: number,
-  }
-
-  function Item(props: ItemProps){
-    const handleAddToCart = () => {
-      addItem({
-        id: props.id,
-        nome: props.nome,
-        descricao: props.descricao,
-        image: props.image,
-        preco: props.preco,
-      });
-      Alert.alert('Sucesso', `${props.nome} adicionado ao carrinho!`);
-    };
-
-    return (
-      <View style={styleDestaque.item}>
-        {props.image && (
-          <Image source={props.image} style={styleDestaque.image} resizeMode="contain" />
-        )}
-        <Text style={styleDestaque.nome}>{props.nome}</Text>
-        {props.descricao && <Text style={styleDestaque.descricao}>{props.descricao}</Text>}
-        <Text style={styleDestaque.preco}>R$ {props.preco.toFixed(2)}</Text>
-        
-        <Button 
-          title="Adicionar"
-          onPress={handleAddToCart}
-          size="small"
-          fullWidth
-        />
-      </View>
-    )
-  }
-
-  const remedios = [
-    {
-      id: '1',
-      nome: 'Dipirona monoidratada 100mg Generico',
-      image: require('../../assets/images/dipirona.png'),
-      descricao: '20 Comprimidos',
-      preco: 9.90
-    },
-    {
-      id: '2',
-      nome: 'Colorio ecoflim 5mg/ml',
-      image: require('../../assets/images/colirio.png'),
-      preco: 15.00
-    },
-    {
-      id: '3',
-      nome: 'Bepantol',
-      image: require('../../assets/images/bepantol.png'),
-      descricao: '20 Comprimidos',
-      preco: 15.00
-    },
-    {
-      id: '4',
-      nome: 'Dipirona monoidratada 100mg Generico',
-      image: require('../../assets/images/xarope.png'),
-      descricao: '20 Comprimidos',
-      preco: 15.00
-    },
-  ]
-
+  const handleAddToCart = (product: Product) => {
+    addItem(product);
+  };
 
   return (
     <View style={styleDestaque.grid}>
-      {remedios.map((item) => {
-        return (
-          <Item
-            key={item.id}
-            id={item.id}
-            nome={item.nome}
-            image={item.image}
-            preco={item.preco}
-            descricao={item.descricao}
-          />)
-      })}
+      {filteredProducts.map((product: Product) => (
+        <ProductItem
+          key={product.id}
+          product={product}
+          onAddToCart={handleAddToCart}
+        />
+      ))}
     </View>
-  )
-}
+  );
+};
 
 export default function Home() {
+  const [searchText, setSearchText] = useState('');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Carregar produtos ao iniciar
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      setIsLoading(true);
+      const data = await productService.getAll();
+      setProducts(data);
+      setFilteredProducts(data);
+      setError(null); // Limpa qualquer erro anterior
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Erro ao carregar produtos. Verifique sua conexão.';
+      setError(errorMessage);
+      console.error('Erro ao carregar produtos:', err);
+      // Se não houver produtos carregados, mostra o erro
+      if (products.length === 0) {
+        setProducts([]);
+        setFilteredProducts([]);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Função de pesquisa
+  const handleSearch = async (text: string) => {
+    setSearchText(text);
+    try {
+      if (text.trim()) {
+        const searchResults = await productService.search(text);
+        setFilteredProducts(searchResults);
+      } else {
+        setFilteredProducts(products);
+      }
+    } catch (err) {
+      console.error('Erro na pesquisa:', err);
+      // Fallback para pesquisa local se a API falhar
+      const filtered = products.filter(product => 
+        product.nome.toLowerCase().includes(text.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    }
+  };
+
+  if (error) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+        <Button title="Tentar novamente" onPress={loadProducts} size="small" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <Header/>
+      <Header onSearch={handleSearch} searchValue={searchText}/>
       <View style={styles.separator}/>
-      <ScrollView 
-        style={styles.wrapper}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        <FarmaciasScroller/>
-        <Propagandas/>
-        <Destaque/>
-      </ScrollView>
+      {isLoading ? (
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#ff2b59" />
+        </View>
+      ) : (
+        <ScrollView 
+          style={styles.wrapper}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          {!searchText && (
+            <>
+              <FarmaciasScroller/>
+              <Propagandas/>
+            </>
+          )}
+          <Destaque searchText={searchText} filteredProducts={filteredProducts}/>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -139,6 +184,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 20,
   },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    color: '#ff2b59',
+    fontSize: 16,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
   separator: {
     height: 1,
     backgroundColor: '#e5e5e5',
@@ -152,7 +209,7 @@ const styleDestaque = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap', 
     justifyContent: 'space-between',
-    marginVertical: 10,
+    marginVertical: 50,
     paddingBottom: 20,
   },
   item: {

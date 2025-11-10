@@ -7,7 +7,12 @@ import {
   View,
 } from "react-native";
 
-export default function Header() {
+interface HeaderProps {
+  onSearch?: (text: string) => void;
+  searchValue?: string;
+}
+
+export default function Header({ onSearch, searchValue }: HeaderProps) {
   const iconSettings = {
     size: 16,
     color: "#919191",
@@ -31,6 +36,8 @@ export default function Header() {
         <TextInput
           style={styles.headerSearchInput}
           placeholder="Buscar no FarmaExpress"
+          value={searchValue}
+          onChangeText={onSearch}
         />
         <TouchableOpacity>
           <Ionicons

@@ -1,11 +1,15 @@
 import { Redirect } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Index() {
+  const { userType } = useAuth();
   
-  return(
-    <Redirect href={'/(tabs)/home'}/>
-  )
+  return userType === 'farmacia' ? (
+    <Redirect href="/manage-products" />
+  ) : (
+    <Redirect href="/home" />
+  );
 }
 
 const styles = StyleSheet.create({

@@ -13,6 +13,7 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Button from "@/components/Button";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Profile() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -54,6 +55,8 @@ export default function Profile() {
     Alert.alert("Termos de Uso", "Funcionalidade em desenvolvimento");
   };
 
+  const { signOut, userType } = useAuth();
+
   const handleLogout = () => {
     Alert.alert(
       "Sair",
@@ -63,7 +66,10 @@ export default function Profile() {
         {
           text: "Sair",
           style: "destructive",
-          onPress: () => Alert.alert("Logout", "Você saiu da conta"),
+          onPress: () => {
+            signOut();
+            router.replace('/login');
+          },
         },
       ]
     );

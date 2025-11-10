@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  SafeAreaView,
   View,
   Text,
   Image,
@@ -8,13 +7,15 @@ import {
   FlatList,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCart } from "@/contexts/CartContext";
 import { router } from "expo-router";
 import Button from "@/components/Button";
 
 export default function Cart() {
-  const { items, updateQty, subtotal } = useCart();
+  const { items, updateQty, subtotal, isLoading, error } = useCart();
   const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">(
     "delivery"
   );
@@ -37,13 +38,24 @@ export default function Cart() {
     router.push("/(tabs)/checkout" as any);
   };
 
-  function renderItem({ item }: { item: typeof items[0] }) {
+  // Item do carrinho como componente separado
+  const CartItem = React.memo(({ item }: { item: typeof items[0] }) => {
+    const [imageError, setImageError] = useState(false);
+    
     return (
       <View style={styles.card}>
         <Image
-          source={item.image}
+          source={
+            imageError || !item.image
+              ? require('../../assets/images/image.png')
+              : { uri: item.image }
+          }
           style={styles.cardImage}
           resizeMode="contain"
+          onError={(error) => {
+            console.log('Erro ao carregar imagem:', error.nativeEvent.error);
+            setImageError(true);
+          }}
         />
         <View style={styles.cardContent}>
           <Text style={styles.cardTitle}>{item.nome}</Text>
@@ -82,14 +94,19 @@ export default function Cart() {
         </View>
       </View>
     );
-  }
+  });
 
   return (
     <SafeAreaView style={styles.container}>
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#ff2b59" />
+        </View>
+      )}
       <FlatList
         data={items}
         keyExtractor={(i) => i.id}
-        renderItem={renderItem}
+        renderItem={({ item }) => <CartItem item={item} />}
         ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.wrapper}
@@ -188,10 +205,30 @@ export default function Cart() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { 
+    flex: 1, 
+    backgroundColor: "#fff" 
+  },
   wrapper: {
     paddingHorizontal: 20,
     paddingTop: 12,
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: '#ff2b59',
+    fontSize: 16,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
   },
   card: {
     backgroundColor: "#fff",
