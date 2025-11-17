@@ -16,11 +16,6 @@ function RootLayoutNavigation() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" />
-      {userType === 'farmacia' ? (
-        <Stack.Screen name="(pharmacy-tabs)" />
-      ) : (
-        <Stack.Screen name="(client-tabs)" />
-      )}
     </Stack>
   );
 }

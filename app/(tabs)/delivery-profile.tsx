@@ -1,26 +1,14 @@
-import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Alert,
-} from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FontAwesome } from "@expo/vector-icons";
-import { router } from "expo-router";
-import Button from "@/components/Button";
-import { useAuth } from "@/contexts/AuthContext";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Button from '@/components/Button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'expo-router';
 
-export default function Profile() {
-  const { signOut, userType } = useAuth();
-
-  const user = {
-    name: userType === 'farmacia' ? "Farmácia Central" : "João Silva",
-    email: userType === 'farmacia' ? "contato@farmaciacentral.com" : "joao.silva@email.com",
-    phone: "(11) 98765-4321",
-  };
+export default function DeliveryProfile() {
+  const { signOut } = useAuth();
+  const router = useRouter();
 
   const handleLogout = () => {
     Alert.alert(
@@ -45,59 +33,76 @@ export default function Profile() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
-            <FontAwesome name={userType === 'farmacia' ? "building" : "user"} size={50} color="#fff" />
+            <FontAwesome name="user" size={50} color="#fff" />
           </View>
-          <Text style={styles.name}>{user.name}</Text>
-          <Text style={styles.email}>{user.email}</Text>
-          <Text style={styles.phone}>{user.phone}</Text>
+          <Text style={styles.name}>Entregador Demo</Text>
+          <Text style={styles.email}>entregador@email.com</Text>
+          <View style={styles.ratingContainer}>
+            <FontAwesome name="star" size={20} color="#FFD700" />
+            <Text style={styles.ratingText}>4.8</Text>
+            <Text style={styles.deliveriesText}>(120 entregas)</Text>
+          </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Conta</Text>
+          <Text style={styles.sectionTitle}>Estatísticas</Text>
+          
+          <View style={styles.statsGrid}>
+            <View style={styles.statBox}>
+              <FontAwesome name="calendar" size={24} color="#ff2b59" />
+              <Text style={styles.statValue}>15</Text>
+              <Text style={styles.statLabel}>Hoje</Text>
+            </View>
+            <View style={styles.statBox}>
+              <FontAwesome name="calendar-o" size={24} color="#ff2b59" />
+              <Text style={styles.statValue}>98</Text>
+              <Text style={styles.statLabel}>Este Mês</Text>
+            </View>
+            <View style={styles.statBox}>
+              <FontAwesome name="money" size={24} color="#4CAF50" />
+              <Text style={styles.statValue}>R$ 450</Text>
+              <Text style={styles.statLabel}>Ganhos Hoje</Text>
+            </View>
+            <View style={styles.statBox}>
+              <FontAwesome name="money" size={24} color="#4CAF50" />
+              <Text style={styles.statValue}>R$ 3.240</Text>
+              <Text style={styles.statLabel}>Ganhos Mês</Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Informações</Text>
           
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemLeft}>
               <View style={styles.iconContainer}>
-                <FontAwesome name="user" size={20} color="#666" />
+                <FontAwesome name="id-card" size={20} color="#666" />
               </View>
-              <Text style={styles.menuItemText}>Editar Perfil</Text>
+              <Text style={styles.menuItemText}>Documentos</Text>
             </View>
             <FontAwesome name="chevron-right" size={16} color="#999" />
           </TouchableOpacity>
 
-          {userType !== 'farmacia' && (
-            <>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={styles.iconContainer}>
-                    <FontAwesome name="map-marker" size={20} color="#666" />
-                  </View>
-                  <Text style={styles.menuItemText}>Meus Endereços</Text>
-                </View>
-                <FontAwesome name="chevron-right" size={16} color="#999" />
-              </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuItemLeft}>
+              <View style={styles.iconContainer}>
+                <FontAwesome name="motorcycle" size={20} color="#666" />
+              </View>
+              <Text style={styles.menuItemText}>Veículo</Text>
+            </View>
+            <FontAwesome name="chevron-right" size={16} color="#999" />
+          </TouchableOpacity>
 
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={styles.iconContainer}>
-                    <FontAwesome name="credit-card" size={20} color="#666" />
-                  </View>
-                  <Text style={styles.menuItemText}>Formas de Pagamento</Text>
-                </View>
-                <FontAwesome name="chevron-right" size={16} color="#999" />
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={styles.iconContainer}>
-                    <FontAwesome name="heart" size={20} color="#666" />
-                  </View>
-                  <Text style={styles.menuItemText}>Favoritos</Text>
-                </View>
-                <FontAwesome name="chevron-right" size={16} color="#999" />
-              </TouchableOpacity>
-            </>
-          )}
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuItemLeft}>
+              <View style={styles.iconContainer}>
+                <FontAwesome name="bank" size={20} color="#666" />
+              </View>
+              <Text style={styles.menuItemText}>Dados Bancários</Text>
+            </View>
+            <FontAwesome name="chevron-right" size={16} color="#999" />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
@@ -118,7 +123,7 @@ export default function Profile() {
               <View style={styles.iconContainer}>
                 <FontAwesome name="lock" size={20} color="#666" />
               </View>
-              <Text style={styles.menuItemText}>Privacidade e Segurança</Text>
+              <Text style={styles.menuItemText}>Segurança</Text>
             </View>
             <FontAwesome name="chevron-right" size={16} color="#999" />
           </TouchableOpacity>
@@ -128,17 +133,7 @@ export default function Profile() {
               <View style={styles.iconContainer}>
                 <FontAwesome name="question-circle" size={20} color="#666" />
               </View>
-              <Text style={styles.menuItemText}>Ajuda e Suporte</Text>
-            </View>
-            <FontAwesome name="chevron-right" size={16} color="#999" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem}>
-            <View style={styles.menuItemLeft}>
-              <View style={styles.iconContainer}>
-                <FontAwesome name="file-text" size={20} color="#666" />
-              </View>
-              <Text style={styles.menuItemText}>Termos de Uso</Text>
+              <Text style={styles.menuItemText}>Ajuda</Text>
             </View>
             <FontAwesome name="chevron-right" size={16} color="#999" />
           </TouchableOpacity>
@@ -166,6 +161,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  scrollView: {
+    flex: 1,
+  },
   profileHeader: {
     backgroundColor: '#fff',
     alignItems: 'center',
@@ -173,7 +171,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
-    marginBottom: 12,
   },
   avatarContainer: {
     width: 100,
@@ -193,15 +190,25 @@ const styles = StyleSheet.create({
   email: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 2,
+    marginBottom: 12,
   },
-  phone: {
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  ratingText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  deliveriesText: {
     fontSize: 14,
     color: '#666',
   },
   section: {
     backgroundColor: '#fff',
-    marginBottom: 12,
+    marginTop: 12,
     paddingVertical: 8,
     borderTopWidth: 1,
     borderBottomWidth: 1,
@@ -235,6 +242,30 @@ const styles = StyleSheet.create({
   menuItemText: {
     fontSize: 16,
     color: '#333',
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    padding: 12,
+    gap: 12,
+  },
+  statBox: {
+    width: '47%',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 8,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
   },
   buttonContainer: {
     paddingHorizontal: 20,

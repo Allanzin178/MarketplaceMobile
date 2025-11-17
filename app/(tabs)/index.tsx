@@ -5,11 +5,15 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Index() {
   const { userType } = useAuth();
   
-  return userType === 'farmacia' ? (
-    <Redirect href="/manage-products" />
-  ) : (
-    <Redirect href="/home" />
-  );
+  if (userType === 'farmacia') {
+    return <Redirect href="/manage-products" />;
+  }
+  
+  if (userType === 'entregador') {
+    return <Redirect href="/available-deliveries" />;
+  }
+  
+  return <Redirect href="/home" />;
 }
 
 const styles = StyleSheet.create({

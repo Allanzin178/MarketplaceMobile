@@ -83,7 +83,7 @@ export default function ManageProducts() {
         source={
           item.image
             ? { uri: item.image }
-            : require('../../assets/images/image.png')
+            : require('../../assets/images/Logo1.png')
         }
         style={styles.productImage}
         resizeMode="contain"
@@ -136,7 +136,7 @@ export default function ManageProducts() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <Header />
       
       <View style={styles.content}>
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   list: {
-    paddingBottom: 20,
+    paddingBottom: 100,
   },
   productCard: {
     flexDirection: 'row',

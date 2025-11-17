@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  SafeAreaView,
   View,
   Text,
   FlatList,
@@ -8,6 +7,7 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from "@expo/vector-icons";
 
 type OrderStatus = "preparing" | "delivering" | "delivered" | "cancelled";
@@ -140,10 +140,10 @@ export default function History() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Image
-          source={require("../../assets/images/image.png")}
+          source={require("../../assets/images/Logo1.png")}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -195,6 +195,7 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 20,
+    paddingBottom: 100,
   },
   orderCard: {
     backgroundColor: "#fff",

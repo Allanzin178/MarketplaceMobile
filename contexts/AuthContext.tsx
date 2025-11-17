@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState } from 'react';
 
-type UserType = 'usuario' | 'farmacia' | null;
+type UserType = 'usuario' | 'farmacia' | 'entregador' | null;
 
 interface AuthContextData {
   userType: UserType;
   isAuthenticated: boolean;
-  signIn: (type: 'usuario' | 'farmacia') => void;
+  signIn: (type: 'usuario' | 'farmacia' | 'entregador') => void;
   signOut: () => void;
 }
 
@@ -14,7 +14,7 @@ export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userType, setUserType] = useState<UserType>(null);
 
-  const signIn = (type: 'usuario' | 'farmacia') => {
+  const signIn = (type: 'usuario' | 'farmacia' | 'entregador') => {
     console.log('AuthContext: signIn como', type);
     setUserType(type);
   };

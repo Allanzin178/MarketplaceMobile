@@ -47,7 +47,7 @@ export default function Cart() {
         <Image
           source={
             imageError || !item.image
-              ? require('../../assets/images/image.png')
+              ? require('../../assets/images/Logo1.png')
               : { uri: item.image }
           }
           style={styles.cardImage}
@@ -97,7 +97,7 @@ export default function Cart() {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {isLoading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color="#ff2b59" />
@@ -113,7 +113,7 @@ export default function Cart() {
         ListHeaderComponent={() => (
           <>
             <Image
-              source={require("../../assets/images/image.png")}
+              source={require("../../assets/images/Logo1.png")}
               style={{ width: 200, height: 80, alignSelf: "center", marginBottom: 8 }}
               resizeMode="contain"
             />
@@ -212,6 +212,7 @@ const styles = StyleSheet.create({
   wrapper: {
     paddingHorizontal: 20,
     paddingTop: 12,
+    paddingBottom: 100,
   },
   centerContent: {
     justifyContent: 'center',

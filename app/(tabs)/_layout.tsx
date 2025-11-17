@@ -3,17 +3,17 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
 import { Pressable, View, Text, StyleSheet } from 'react-native';
 import { CartProvider, useCart } from '@/contexts/CartContext';
+import { FavoritesProvider } from '@/contexts/FavoritesContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Redirect } from 'expo-router';
 
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
   size?: number;
 }) {
-  return <FontAwesome size={props.size || 24} style={{ marginBottom: -3 }} color={props.color} name={props.name} />;
+  return <FontAwesome size={props.size || 28} style={{ marginBottom: -3 }} {...props} />;
 }
 
 function CartIcon({ color }: { color: string }) {
@@ -23,8 +23,8 @@ function CartIcon({ color }: { color: string }) {
     <View style={{ position: 'relative' }}>
       <TabBarIcon name="shopping-basket" color={color} size={20} />
       {totalItems > 0 && (
-        <View>
-          <Text>{totalItems}</Text>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{totalItems}</Text>
         </View>
       )}
     </View>
@@ -34,6 +34,7 @@ function CartIcon({ color }: { color: string }) {
 function TabsContent() {
   const { userType } = useAuth();
   const isFarmacia = userType === 'farmacia';
+  const isEntregador = userType === 'entregador';
 
   return (
     <Tabs
@@ -41,24 +42,11 @@ function TabsContent() {
         headerShown: false,
         tabBarActiveTintColor: '#ff2b59',
         tabBarInactiveTintColor: '#666',
-        tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopColor: '#f0f0f0',
-          borderTopWidth: 1,
-        },
-        tabBarItemStyle: {
-          paddingTop: 5,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          marginTop: 0,
-          padding: 0,
-        }
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          tabBarButton: () => null,
+          href: null,
         }}
       />
       
@@ -68,7 +56,44 @@ function TabsContent() {
         options={{
           title: 'Seus Produtos',
           tabBarIcon: ({ color }) => <TabBarIcon name="cubes" color={color} />,
-          tabBarButton: isFarmacia ? undefined : () => null,
+          href: isFarmacia ? undefined : null,
+        }}
+      />
+
+      {/* Telas do Entregador */}
+      <Tabs.Screen
+        name="available-deliveries"
+        options={{
+          title: 'Disponíveis',
+          tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} size={22} />,
+          href: isEntregador ? undefined : null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="my-deliveries"
+        options={{
+          title: 'Minhas Entregas',
+          tabBarIcon: ({ color }) => <TabBarIcon name="check-circle" color={color} size={22} />,
+          href: isEntregador ? undefined : null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="delivery-history"
+        options={{
+          title: 'Histórico',
+          tabBarIcon: ({ color }) => <TabBarIcon name="file-text-o" color={color} size={20} />,
+          href: isEntregador ? undefined : null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="delivery-profile"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} size={20} />,
+          href: isEntregador ? undefined : null,
         }}
       />
 
@@ -78,7 +103,7 @@ function TabsContent() {
         options={{
           title: 'Tela inicial',
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-          tabBarButton: !isFarmacia ? undefined : () => null,
+          href: !isFarmacia && !isEntregador ? undefined : null,
         }}
       />
 
@@ -87,7 +112,7 @@ function TabsContent() {
         options={{
           title: 'Suas cestas',
           tabBarIcon: ({ color }) => <CartIcon color={color} />,
-          tabBarButton: !isFarmacia ? undefined : () => null,
+          href: !isFarmacia && !isEntregador ? undefined : null,
         }}
       />
 
@@ -96,16 +121,17 @@ function TabsContent() {
         options={{
           title: 'Pedidos',
           tabBarIcon: ({ color }) => <TabBarIcon name="file-text-o" color={color} size={20}/>,
-          tabBarButton: !isFarmacia ? undefined : () => null,
+          href: !isFarmacia && !isEntregador ? undefined : null,
         }}
       />
 
-      {/* Tela comum para ambos */}
+      {/* Tela comum para cliente e farmácia */}
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Perfil',
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} size={20}/>,
+          href: !isEntregador ? undefined : null,
         }}
       />
 
@@ -113,28 +139,28 @@ function TabsContent() {
       <Tabs.Screen
         name="checkout"
         options={{
-          tabBarButton: () => null,
+          href: null,
         }}
       />
 
       <Tabs.Screen
         name="order-success"
         options={{
-          tabBarButton: () => null,
+          href: null,
         }}
       />
 
       <Tabs.Screen
         name="new-product"
         options={{
-          tabBarButton: () => null,
+          href: null,
         }}
       />
 
       <Tabs.Screen
         name="edit-product"
         options={{
-          tabBarButton: () => null,
+          href: null,
         }}
       />
     </Tabs>
@@ -149,36 +175,30 @@ export default function TabLayout() {
   }
 
   return (
-    <CartProvider>
-      <TabsContent />
-    </CartProvider>
+    <FavoritesProvider>
+      <CartProvider>
+        <TabsContent />
+      </CartProvider>
+    </FavoritesProvider>
   );
 }
 
-// const styles = StyleSheet.create({
-//   badge: {
-//     position: 'absolute',
-//     right: -8,
-//     top: -5,
-//     backgroundColor: '#ff2b59',
-//     borderRadius: 8,
-//     minWidth: 16,
-//     height: 16,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     paddingHorizontal: 3,
-//     borderWidth: 1,
-//     borderColor: '#fff',
-//     zIndex: 2,
-//     elevation: 3,
-//   },
-//   badgeText: {
-//     color: '#fff',
-//     fontSize: 9,
-//     fontWeight: 'bold',
-//     includeFontPadding: false,
-//     textAlignVertical: 'center',
-//     lineHeight: 14,
-//   },
-// });
-
+const styles = StyleSheet.create({
+  badge: {
+    position: 'absolute',
+    right: -8,
+    top: -4,
+    backgroundColor: '#ff2b59',
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+});

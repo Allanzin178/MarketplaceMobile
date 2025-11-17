@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -24,7 +24,22 @@ export default function NewProduct() {
   const [descricao, setDescricao] = useState('');
   const [preco, setPreco] = useState('');
   const [image, setImage] = useState<string | null>(null);
+  const [categoria, setCategoria] = useState('');
+  const [categorias, setCategorias] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const cats = await productService.getCategories();
+      setCategorias(cats);
+    } catch (err) {
+      console.error('Erro ao carregar categorias:', err);
+    }
+  };
 
   const predefinedImages = [
     {
@@ -46,7 +61,7 @@ export default function NewProduct() {
   };
 
   const handleSubmit = async () => {
-    if (!nome || !descricao || !preco) {
+    if (!nome || !descricao || !preco || !categoria) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
@@ -70,7 +85,8 @@ export default function NewProduct() {
         nome,
         descricao,
         preco: precoNumber,
-        image: image
+        image: image,
+        categoria: categoria,
       });
 
       Alert.alert('Sucesso', 'Produto cadastrado com sucesso!', [
@@ -87,9 +103,9 @@ export default function NewProduct() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <Header />
-      <ScrollView style={styles.content}>
+      <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 100 }}>
         <View style={styles.header}>
           <Text style={styles.title}>Novo Produto</Text>
         </View>
@@ -147,6 +163,35 @@ export default function NewProduct() {
               placeholderTextColor="#999"
               keyboardType="decimal-pad"
             />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Categoria</Text>
+            <View style={styles.categoryContainer}>
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                style={styles.categoryScroll}
+              >
+                {categorias.map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[
+                      styles.categoryChip,
+                      categoria === cat && styles.categoryChipActive
+                    ]}
+                    onPress={() => setCategoria(cat)}
+                  >
+                    <Text style={[
+                      styles.categoryChipText,
+                      categoria === cat && styles.categoryChipTextActive
+                    ]}>
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
           </View>
 
           <Button
@@ -236,5 +281,32 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     marginHorizontal: -8,
+  },
+  categoryContainer: {
+    marginBottom: 8,
+  },
+  categoryScroll: {
+    flexDirection: 'row',
+  },
+  categoryChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#f5f5f5',
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+  },
+  categoryChipActive: {
+    backgroundColor: '#ff2b59',
+    borderColor: '#ff2b59',
+  },
+  categoryChipText: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500',
+  },
+  categoryChipTextActive: {
+    color: '#fff',
   },
 });

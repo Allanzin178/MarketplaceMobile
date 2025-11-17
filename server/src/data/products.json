@@ -4,34 +4,39 @@
     "nome": "Dipirona monoidratada 100mg Generico",
     "image": "https://dmvfarma.vtexassets.com/arquivos/ids/298708/2ee72c4a-aed0-4846-bd0f-53bcf4db4e84.jpg?v=638974222646930000",
     "descricao": "20 Comprimidos",
-    "preco": 9.9
+    "preco": 9.9,
+    "categoria": "Analgésicos"
   },
   {
     "id": "2",
     "nome": "Colorio ecoflim Oftamologico 5mg/ml",
     "image": "https://dmvfarma.vtexassets.com/arquivos/ids/272649-500-auto?v=638846483335170000&width=500&height=auto&aspect=true",
     "descricao": "5mg/ml",
-    "preco": 15.1
+    "preco": 15.1,
+    "categoria": "Analgésicos"
   },
   {
     "id": "4",
     "nome": "Xarope 44E Vick 120ml",
     "image": "https://images.ctfassets.net/dnhuh4prvxcr/3WQU4B0k6UxSaKp6OOZYxA/150383fe5a50d7a2dc7e744e1c6e0c78/jarabe_44_120ml.Final_Color_Output.0006_840.png",
     "descricao": "120 ml",
-    "preco": 29.9
+    "preco": 29.9,
+    "categoria": "Respiratórios"
   },
   {
     "id": "1762751728014",
     "nome": "Teste",
     "descricao": "Teste",
     "preco": 100,
-    "image": "https://saude.abril.com.br/wp-content/uploads/2020/10/remedio01.jpeg?crop=1&resize=1212,909"
+    "image": "https://saude.abril.com.br/wp-content/uploads/2020/10/remedio01.jpeg?crop=1&resize=1212,909",
+    "categoria": "Outros"
   },
   {
     "id": "1762752078503",
     "nome": "Fralda",
     "descricao": "Bebe",
     "preco": 150,
-    "image": "https://static.vecteezy.com/ti/vetor-gratis/p1/658028-desenho-de-objeto-de-ferramenta-de-escola-de-lapis-gratis-vetor.jpg"
+    "image": "https://static.vecteezy.com/ti/vetor-gratis/p1/658028-desenho-de-objeto-de-ferramenta-de-escola-de-lapis-gratis-vetor.jpg",
+    "categoria": "Higiene"
   }
 ]

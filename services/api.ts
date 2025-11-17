@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { Platform } from 'react-native';
+
+const LOCAL_IP = '192.168.1.27';
 
 export const api = axios.create({
-  baseURL: 'http://192.168.1.16:3000/api', // IP local do seu computador
+  baseURL: `http://${LOCAL_IP}:3000/api`,
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',

@@ -1,19 +1,19 @@
 import React from "react";
 import {
-  SafeAreaView,
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Image,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import Button from "@/components/Button";
 
 export default function OrderSuccess() {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.content}>
         <View style={styles.iconContainer}>
           <FontAwesome name="check-circle" size={100} color="#4ade80" />

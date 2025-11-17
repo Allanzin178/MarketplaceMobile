@@ -8,7 +8,7 @@ export default function Login() {
   const { signIn } = useAuth();
   const router = useRouter();
 
-  const handleLogin = (type: 'usuario' | 'farmacia') => {
+  const handleLogin = (type: 'usuario' | 'farmacia' | 'entregador') => {
     signIn(type);
     router.replace('/(tabs)');
   };
@@ -34,6 +34,13 @@ export default function Login() {
           <Button
             title="Entrar como Farmácia"
             onPress={() => handleLogin('farmacia')}
+            variant="outline"
+            fullWidth
+          />
+          <View style={styles.buttonSpacer} />
+          <Button
+            title="Entrar como Entregador"
+            onPress={() => handleLogin('entregador')}
             variant="outline"
             fullWidth
           />
